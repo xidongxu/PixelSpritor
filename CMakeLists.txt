@@ -48,48 +48,10 @@ add_custom_command(
     $<TARGET_FILE_DIR:${PROJECT_NAME}>
 )
 
-# 包含 minimp3 头文件
-include_directories(${CMAKE_SOURCE_DIR}/libs/minimp3/)
-
-# 子目录
-add_subdirectory(audio)
-# 链接 audio 库
-target_link_libraries(${PROJECT_NAME} audio)
-# 包含 audio 头文件
-include_directories(${CMAKE_SOURCE_DIR}/audio/)
-
-# 子目录
-add_subdirectory(${CMAKE_SOURCE_DIR}/libs/lvgl)
-# 链接 lvgl 库
-target_link_libraries(${PROJECT_NAME} lvgl lvgl::demos lvgl::examples lvgl::thorvg)
-# 包含 lvgl 头文件
-include_directories(${CMAKE_SOURCE_DIR}/libs/lvgl/)
-
-# 子目录
-add_subdirectory(player)
-# 链接 player 库
-target_link_libraries(${PROJECT_NAME} player)
-# 包含 player 头文件
-include_directories(${CMAKE_SOURCE_DIR}/player/)
-
-# 子目录
-add_subdirectory(${CMAKE_SOURCE_DIR}/libs/FastLZ)
-# 链接 audio 库
-target_link_libraries(${PROJECT_NAME} fastlz)
-# 包含 audio 头文件
-include_directories(${CMAKE_SOURCE_DIR}/libs/FastLZ/)
-
-# 子目录
-add_subdirectory(callstack)
-# 链接 debug 库
-target_link_libraries(${PROJECT_NAME} callstack)
-# 包含 debug 头文件
-include_directories(${CMAKE_SOURCE_DIR}/callstack/)
-
 # FreeRTOS 库
 set(FREERTOS_KERNEL_PATH ${CMAKE_SOURCE_DIR}/libs/FreeRTOS-LTS/FreeRTOS/FreeRTOS-Kernel)
 add_library(freertos_config INTERFACE)
-target_include_directories(freertos_config INTERFACE ${FREERTOS_KERNEL_PATH}/examples/template_configuration/)
+target_include_directories(freertos_config INTERFACE ${CMAKE_SOURCE_DIR}/config/)
 if (DEFINED FREERTOS_SMP_EXAMPLE AND FREERTOS_SMP_EXAMPLE STREQUAL "1")
     message(STATUS "Build FreeRTOS SMP example")
     add_compile_options( -DconfigNUMBER_OF_CORES=2 -DconfigUSE_PASSIVE_IDLE_HOOK=0 )
@@ -116,6 +78,8 @@ target_compile_options(freertos_kernel PRIVATE
     $<$<COMPILE_LANG_AND_ID:C,Clang>:-Wno-covered-switch-default>
     $<$<COMPILE_LANG_AND_ID:C,Clang>:-Wno-cast-align> )
 target_link_libraries(${PROJECT_NAME} freertos_kernel freertos_config)
+include_directories(${FREERTOS_KERNEL_PATH}/portable/MSVC-MingW)
+include_directories(${FREERTOS_KERNEL_PATH}/include)
 set_property(TARGET freertos_kernel PROPERTY C_STANDARD 99)
 
 # Threadx 库
@@ -129,6 +93,45 @@ include_directories(${CMAKE_SOURCE_DIR}/libs/threadx/common/inc)
 include_directories(${CMAKE_SOURCE_DIR}/libs/threadx/utility/rtos_compatibility_layers/posix)
 target_compile_definitions(${PROJECT_NAME} PRIVATE RTOS_USE_THREADX)
 endif()
+
+# 包含 minimp3 头文件
+include_directories(${CMAKE_SOURCE_DIR}/libs/minimp3/)
+
+# 子目录
+add_subdirectory(audio)
+# 链接 audio 库
+target_link_libraries(${PROJECT_NAME} audio)
+# 包含 audio 头文件
+include_directories(${CMAKE_SOURCE_DIR}/audio/)
+
+# 子目录
+set(LV_CONF_PATH "${CMAKE_SOURCE_DIR}/config/lv_conf.h")
+add_subdirectory(${CMAKE_SOURCE_DIR}/libs/lvgl)
+# 链接 lvgl 库
+target_link_libraries(${PROJECT_NAME} lvgl lvgl::demos lvgl::examples lvgl::thorvg)
+# 包含 lvgl 头文件
+include_directories(${CMAKE_SOURCE_DIR}/libs/lvgl/)
+
+# 子目录
+add_subdirectory(player)
+# 链接 player 库
+target_link_libraries(${PROJECT_NAME} player)
+# 包含 player 头文件
+include_directories(${CMAKE_SOURCE_DIR}/player/)
+
+# 子目录
+add_subdirectory(${CMAKE_SOURCE_DIR}/libs/FastLZ)
+# 链接 audio 库
+target_link_libraries(${PROJECT_NAME} fastlz)
+# 包含 audio 头文件
+include_directories(${CMAKE_SOURCE_DIR}/libs/FastLZ/)
+
+# 子目录
+add_subdirectory(callstack)
+# 链接 debug 库
+target_link_libraries(${PROJECT_NAME} callstack)
+# 包含 debug 头文件
+include_directories(${CMAKE_SOURCE_DIR}/callstack/)
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)
     set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 11)
