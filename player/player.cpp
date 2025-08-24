@@ -46,9 +46,7 @@ static void playerTask(void* parameters) {
 static void playerTaskInit(void) {
     static StaticTask_t playerTaskTCB;
     static StackType_t playerTaskStack[256];
-    printf("FreeRTOS Plyaer Project\n");
-    xTaskCreateStatic(playerTask, "player", 256, NULL, configMAX_PRIORITIES - 1U, &(playerTaskStack[0]), &(playerTaskTCB));
-    vTaskStartScheduler();
+    xTaskCreateStatic(playerTask, "player", 256, NULL, configMAX_PRIORITIES - 1U, playerTaskStack, &playerTaskTCB);
 }
 
 int main_player(void) {

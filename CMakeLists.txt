@@ -116,7 +116,7 @@ target_compile_options(freertos_kernel PRIVATE
     $<$<COMPILE_LANG_AND_ID:C,Clang>:-Wno-covered-switch-default>
     $<$<COMPILE_LANG_AND_ID:C,Clang>:-Wno-cast-align> )
 target_link_libraries(${PROJECT_NAME} freertos_kernel freertos_config)
-set_property(TARGET freertos_kernel PROPERTY C_STANDARD 90)
+set_property(TARGET freertos_kernel PROPERTY C_STANDARD 99)
 
 # Threadx 库
 if (RTOS_USE_THREADX)

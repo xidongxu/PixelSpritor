@@ -11,7 +11,6 @@
 static void* pthread_entry(void* parameter) {
     int result = 0, counter = 0;
     struct timespec sleep = { 0,0 };
-    callstack();
     main_audio();
     main_player();
     while (true) {
@@ -41,6 +40,7 @@ void tx_application_define(void* first_unused_memory) {
 }
 
 int main(void) {
+    callstack();
     tx_kernel_enter();
     return 0;
 }
@@ -51,10 +51,24 @@ void vApplicationStackOverflowHook(TaskHandle_t xTask, char* pcTaskName) {
     for (;;);
 }
 
-int main(void) {
-    callstack();
+static void mainTask(void* parameters) {
     main_audio();
     main_player();
+    while (1) {
+        vTaskDelay(pdMS_TO_TICKS(1000));
+    }
+}
+
+static void mainTaskInit(void) {
+    static StaticTask_t mainTaskTCB;
+    static StackType_t mainTaskStack[512];
+    xTaskCreateStatic(mainTask, "main", 512, NULL, configMAX_PRIORITIES - 1U, mainTaskStack, &mainTaskTCB);
+}
+
+int main(void) {
+    callstack();
+    mainTaskInit();
+    vTaskStartScheduler();
     return 0;
 }
 #endif
