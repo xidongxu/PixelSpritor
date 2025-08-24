@@ -4,16 +4,10 @@
 #include "callstack.h"
 #include <FreeRTOS.h>
 #include <task.h>
-
 #include <stdio.h>
+
+#ifdef RTOS_USE_THREADX
 #include "pthread.h"
-
-void vApplicationStackOverflowHook(TaskHandle_t xTask, char* pcTaskName) {
-    (void)xTask;
-    (void)pcTaskName;
-    for (;;);
-}
-
 static void* pthread_entry(void* parameter) {
     int result = 0, counter = 0;
     struct timespec sleep = { 0,0 };
@@ -50,3 +44,17 @@ int main(void) {
     tx_kernel_enter();
     return 0;
 }
+#else //RTOS_USE_FREERTOS
+void vApplicationStackOverflowHook(TaskHandle_t xTask, char* pcTaskName) {
+    (void)xTask;
+    (void)pcTaskName;
+    for (;;);
+}
+
+int main(void) {
+    callstack();
+    main_audio();
+    main_player();
+    return 0;
+}
+#endif

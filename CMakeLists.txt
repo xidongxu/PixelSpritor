@@ -119,6 +119,7 @@ target_link_libraries(${PROJECT_NAME} freertos_kernel freertos_config)
 set_property(TARGET freertos_kernel PROPERTY C_STANDARD 90)
 
 # Threadx 库
+if (RTOS_USE_THREADX)
 include("${CMAKE_SOURCE_DIR}/libs/threadx/cmake/win32.cmake")
 set(TX_USER_FILE ${CMAKE_SOURCE_DIR}/libs/threadx/tx_user.h)
 add_subdirectory(${CMAKE_SOURCE_DIR}/libs/threadx)
@@ -126,6 +127,8 @@ add_subdirectory(${CMAKE_SOURCE_DIR}/libs/threadx/utility/rtos_compatibility_lay
 target_link_libraries(${PROJECT_NAME} threadx)
 include_directories(${CMAKE_SOURCE_DIR}/libs/threadx/common/inc)
 include_directories(${CMAKE_SOURCE_DIR}/libs/threadx/utility/rtos_compatibility_layers/posix)
+target_compile_definitions(${PROJECT_NAME} PRIVATE RTOS_USE_THREADX)
+endif()
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)
     set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 11)
